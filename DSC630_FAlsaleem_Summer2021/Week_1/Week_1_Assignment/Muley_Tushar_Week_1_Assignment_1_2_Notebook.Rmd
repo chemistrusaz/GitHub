@@ -1,0 +1,272 @@
+---
+title: "Muley, Tushar Assignment 1-2 Week 1"
+output:
+  word_document: default
+  html_notebook: default
+  html_document:
+    df_print: paged
+  pdf_document: default
+date: "June 13, 2021"
+---
+
+# 1. Import, Plot, Summarize, and Save Data
+# Using the Bureau of Labor Statistics data, choose a dataset that interest you. 
+# Then generate summary statistics for 2 variables, plot some of the features 
+# (e.g., histograms, box plots, density plots, etc.) of several variables, and save the 
+# data locally as CSV files.
+
+#Imported Financial_activities_all_states_us.csv
+#variable to shorting name
+
+
+```{r}
+
+fin_act <- read.csv('C:/Users/Tushar/RStudioProjects/DSC630_SUMMER_2021/financial_activities_all_states_us.csv')
+
+```
+#Install pastecs package
+```{r}
+install.packages("pastecs",repos = "http://cran.us.r-project.org")
+library(pastecs,)
+
+```
+
+```{r}
+#See the column headers
+head(fin_act,)
+```
+
+```{r}
+#Summary Statistics for 2 variables
+attach(fin_act)
+sum_fin_act<-cbind(month1_emplvl, total_qtrly_wages)
+stat.desc(sum_fin_act)
+```
+
+#Plot some of the features 
+# (e.g., histograms, box plots, density plots, etc.) of several variables
+
+```{r}
+#Move data into a dataframe
+fin_act_df<-data.frame(fin_act)
+
+#Preview the dataframe
+head(fin_act_df)
+
+
+```
+
+
+```{r}
+library(ggplot2)
+# Basic histogram of average week wages
+ggplot(fin_act_df, aes(x=avg_wkly_wage)) + geom_histogram(binwidth = 100)
+```
+
+
+
+```{r}
+#Denisty Plot of average weekly wages
+ggplot(fin_act_df, aes(x=avg_wkly_wage)) +
+  geom_density(fill="#69b3a2", color="#e9ecef", alpha=0.8)
+```
+
+```{r}
+#Historam of average 
+ggplot(fin_act_df, aes(x=lq_avg_wkly_wage)) + geom_histogram()
+```
+
+```{r}
+#Historam of quarterly contributions
+ggplot(fin_act_df, aes(x=qtrly_contributions)) + geom_histogram(binwidth = 10000000000)
+```
+
+```{r}
+#Denisty Plot of quarterly contributions
+ggplot(fin_act_df, aes(x=qtrly_contributions)) +
+  geom_density(fill="#69b3a2", color="#e9ecef", alpha=0.8)
+```
+
+```{r}
+
+#Denisty Plot of average weekly wages
+ggplot(fin_act_df, aes(x=lq_qtrly_estabs)) +
+  geom_density(fill="#69b3a2", color="#e9ecef", alpha=0.8)
+
+
+```
+
+#Need to filter the data by a level code. 
+#Level code 53 	Statewide, by Supersector -- by ownership sector
+
+```{r}
+
+head(fin_act_df)
+```
+
+
+```{r}
+
+fin_act_C53_df <- fin_act_df[fin_act_df$agglvl_code == '53',]
+
+
+
+```
+```{r}
+head(fin_act_C53_df)
+```
+
+```{r}
+#Min
+min(fin_act_C53_df$total_qtrly_wages)
+
+```
+
+```{r}
+#Max
+max(fin_act_C53_df$total_qtrly_wages)
+```
+
+```{r}
+#Median
+median(fin_act_C53_df$total_qtrly_wages)
+```
+
+```{r}
+#Mean
+mean(fin_act_C53_df$total_qtrly_wages)
+```
+
+```{r}
+#Median
+median(fin_act_C53_df$avg_wkly_wage)
+```
+
+
+```{r}
+#Denisty Plot of qtrly_establishment
+ggplot(fin_act_C53_df, aes(x=qtrly_estabs)) +
+  geom_density(fill="#69b3a2", color="#e9ecef", alpha=0.8)
+```
+
+```{r}
+#Histogram of month2_emplvl
+ggplot(fin_act_C53_df, aes(x=month2_emplvl)) + geom_histogram(binwidth = 100000)
+```
+
+
+```{r}
+#Density plot of oty_month1_emplvl_chg
+ggplot(fin_act_C53_df, aes(x=oty_month1_emplvl_chg)) +
+  geom_density(fill="#69b3a2", color="#e9ecef", alpha=0.8)
+```
+
+
+```{r}
+#Boxplot of month 3 Employment and own code
+ggplot(fin_act_C53_df, aes(x=month3_emplvl, y=own_code, group=own_code)) + 
+    geom_boxplot() + facet_wrap(~own_code)
+
+```
+
+
+```{r}
+#Bar graph of own codes
+ggplot(fin_act_C53_df) +
+  geom_bar(mapping = aes(x = own_code))
+
+```
+
+#2. Explore Some Bivariate Relations
+#Use the same dataset within the same website to explore some bivariate relations #(e.g. bivariate plot, correlation, table cross table etc.)
+
+
+```{r}
+
+install.packages("ggpubr", repos = "http://cran.us.r-project.org")
+library("ggpubr")
+```
+
+#Checking to see Quarterly wage correlate to Taxable Quarter Wages
+
+```{r}
+ggscatter(fin_act_C53_df, x = "total_qtrly_wages", y = "taxable_qtrly_wages", 
+          add = "reg.line", conf.int = TRUE, 
+          cor.coef = TRUE, cor.method = "pearson",
+          xlab = "Total Quarterly Wages", ylab = "Taxable Quarterly Wages")
+```
+
+#QQPlot
+
+```{r}
+# total_qtrly_wages
+ggqqplot(fin_act_C53_df$total_qtrly_wages, ylab = "total_qtrly_wages")
+
+# Taxable Quarterly Wages
+ggqqplot(fin_act_C53_df$taxable_qtrly_wages, ylab = "taxable_qtrly_wages")
+```
+
+#Pearson Correlation
+```{r}
+person_cor <- cor.test(fin_act_C53_df$total_qtrly_wages, 
+                fin_act_C53_df$taxable_qtrly_wages, method = "pearson")
+person_cor
+```
+
+#Pearson Correlation:
+
+#t is the t-test statistic value (t = 13.168),
+#df is the degrees of freedom (df= 190),
+#p-value is p-value = 2.2e^-16}).
+conf.int is the confidence interval of the correlation coefficient at 95% 
+(conf.int = [0.6087, 0.7582]);
+
+sample estimates is the correlation coefficient (Cor.coeff = 0.6907).
+
+
+
+#Kendall Rank Correlation
+```{r}
+kendall_cor <- cor.test(fin_act_C53_df$total_qtrly_wages, 
+                fin_act_C53_df$taxable_qtrly_wages,  method="kendall")
+kendall_cor
+```
+
+#Kendall Correlation:
+#Correlation coeffient between total quarterly wages and taxable quarterly wages
+#0.6706 and p-value = 2.2e^-16
+
+
+#Spearman Correlation
+```{r}
+spreaman_cor <-cor.test(fin_act_C53_df$total_qtrly_wages, 
+                fin_act_C53_df$taxable_qtrly_wages,  method = "spearman")
+spreaman_cor
+```
+
+#Spearman Correlation:
+#Correlation coefficient between quarterly wages and taxable quarterly wages is 
+#0.8049 rho and p-value is 2.2e^-16
+
+#Based on this these correlation I would say we have a positive correlation between #quarterly wages and taxable quarterly wages. 
+
+#It is on a perfect correlation but strong positive correlation:
+#Pearson: 0.6907
+#Kendall: 0.6706
+#Spearan: 0.8049
+
+#If quarter wages go up so does taxable quarterly wages.
+
+
+#3. Organize a Data Report
+#Generate a summary report. Make sure to include: summary for every variable, #structure and type of data elements, discuss four results of your data.
+
+```{r}
+str(fin_act_C53_df)
+```
+
+
+
+
+
+
