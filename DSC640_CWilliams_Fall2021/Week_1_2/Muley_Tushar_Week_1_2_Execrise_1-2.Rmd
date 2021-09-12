@@ -1,0 +1,156 @@
+---
+title: "Week 1 & 2 Execrise 1.2"
+author: "Tushar Muley"
+date: "9/12/2021"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+
+
+
+```{r}
+# call all libraries
+
+library(ggplot2)
+library(stringr)
+library(dplyr)
+library(readr)
+library(tidyr)
+library(readxl)
+```
+```{r}
+# load data
+
+winner <- read_excel('C:/Users/Tushar/Documents/Bellevue_University/DSC_640_Class/Week_1_2/hotdog-contest-winners.xlsx')
+
+ratings <- read_excel('C:/Users/Tushar/Documents/Bellevue_University/DSC_640_Class/Week_1_2/obama-approval-ratings.xlsx')
+
+```
+
+```{r}
+# preview the dataframe for hotdog winners
+
+head(winner)
+```
+
+
+```{r}
+# preview the dataframe for Obama
+head(ratings)
+```
+
+
+```{r}
+# bar plot hotdog contest winner
+
+bar1<-ggplot(data=winner, aes(x=Country, y=`Dogs eaten`)) +
+  geom_bar(stat="identity", fill="steelblue") +
+  ggtitle("R Bar Chart: Hotdogs Eaten by Country") +
+  labs(x="Countries", y="Dogs Eaten") +
+  theme_minimal()
+
+bar1
+```
+
+#Stack bar chart
+```{r}
+stackbar<- ggplot(winner, aes(fill=Year, y=`Dogs eaten`, x=Country)) +       
+      geom_bar(position="stack", stat="identity") +
+      ggtitle("R Stack Bar Chart: Hotdogs Eaten by Country and Year") +
+      labs(x="Countries", y="Dogs Eaten")
+stackbar
+```
+
+#Pie Chart
+
+```{r}
+countrywinner <- winner %>% 
+  group_by(Country) %>% 
+  summarise(Total = sum(`Dogs eaten`, na.rm = TRUE))
+
+countrywinner
+```
+
+```{r}
+ggplot(countrywinner, aes(x="", y=Total, fill=Country)) +
+  geom_bar(stat="identity", width=1, color="white") +
+  coord_polar("y", start=0) +
+  ggtitle("R Pie Chart: Hotdogs Eaten by Country") +
+  theme_void()+
+  geom_text(aes(label = Total), position = position_stack(vjust = 0.5), color = "white", size=5) +
+  scale_fill_brewer(palette="Set1")
+
+```
+
+#Donut Chart
+
+```{r}
+
+# Compute percentages
+countrywinner$fraction = countrywinner$Total / sum(countrywinner$Total)
+
+# Compute the cumulative percentages (top of each rectangle)
+countrywinner$ymax = cumsum(countrywinner$fraction)
+
+# Compute the bottom of each rectangle
+countrywinner$ymin = c(0, head(countrywinner$ymax, n=-1))
+
+# Compute label position
+countrywinner$labelPosition <- (countrywinner$ymax + countrywinner$ymin) / 2
+ 
+# Compute a good label
+countrywinner$label <- paste0(countrywinner$Country, "\n value: ", countrywinner$Total)
+
+# Make the plot
+ggplot(countrywinner, aes(ymax=ymax, ymin=ymin, xmax=4, xmin=3, fill=Country)) +
+  geom_rect() +
+  geom_label(x=3.5, aes(y=labelPosition, label=Total), size=5) +   
+  scale_fill_brewer(palette="Set1") +
+  coord_polar(theta="y") +
+  xlim(c(2,4)) +
+  theme_void() +
+  theme(axis.text.x=element_blank()) +
+  theme(legend.position=c(.5, .5)) +
+  #theme(legend.position = "none") +
+  ggtitle("R Donut Chart: Hotdogs Eaten by Country")
+  
+
+
+```
+
+```{r}
+
+```
+```{r}
+library(ggplot2)
+library(ggpubr)
+
+```
+
+
+
+```{r}
+#New data
+
+df <- data.frame(
+ category = c("cars", "trucks", "suvs"),
+ value = c(17, 45, 38))
+
+head(df)
+
+```
+
+```{r}
+labs <- paste0(df$category, " (", df$value, "%)")
+ggdonutchart(df, "value", label = labs,
+   lab.pos = "in", lab.font = "black",
+   fill = "category", color = "white",
+   title = "R Donut Chart",
+   palette = c("steelblue", "dodgerblue", "royalblue2", "blue"))
+
+```
+
+
+
