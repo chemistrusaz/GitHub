@@ -1,0 +1,52 @@
+---
+title: "Muley_Tushar_Week_3_4_Execrise_2-2_Line_Chart"
+author: "Tushar Muley"
+date: "9/26/2021"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r}
+# call all libraries
+
+library(ggplot2)
+library(stringr)
+library(dplyr)
+library(readr)
+library(tidyr)
+library(readxl)
+```
+
+```{r}
+# load data
+wp <- read_excel('C:/Users/Tushar/Documents/Bellevue_University/DSC_640_Class/Week_3_4/world-population.xlsx')
+```
+
+```{r}
+# preview the dataframe for hotdog winners
+
+head(wp)
+```
+
+
+```{r}
+# plot line char
+
+plot(wp$Year, wp$Population, type="l",
+    ylim=c(0, 7000000000), xlab="Year", ylab="Population", col = "Red", 
+    main= "R Line Chart: World Poplulation")
+```
+
+```{r}
+plot(wp$Year, wp$Population, type="s",
+    main="R Step Line Chart: World Poplulation",
+    xlab="Year", ylab="Population", col = "Blue")
+```
+
+
+
+
+
+
