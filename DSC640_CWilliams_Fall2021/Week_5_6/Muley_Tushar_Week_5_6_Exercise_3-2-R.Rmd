@@ -1,0 +1,90 @@
+---
+title: "Exercise_3-2_Week_5-6"
+author: "Tushar Muley"
+date: "10/10/2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+
+#Tree Map
+# Load Libraries
+```{r}
+library(ggplot2)
+library(stringr)
+library(dplyr)
+library(readr)
+library(tidyr)
+library(readxl)
+```
+
+```{r}
+
+# load data
+expend <- read_excel('C:/Users/Tushar/Documents/Bellevue_University/DSC_640_Class/Week_5_6/expenditure_2.xlsx')
+```
+
+```{r}
+# library
+library(treemap)
+
+# treemap
+treemap(expend,
+            index="cateogry",
+            vSize="expenditure",
+            type="index",
+            title="R Studio: Tree Map", #Title
+            fontsize.title=12, #Font Size  
+            )
+```
+
+#Stacked Area Chart
+
+```{r}
+expends <- read_excel('C:/Users/Tushar/Documents/Bellevue_University/DSC_640_Class/Week_5_6/expenditures.xlsx')
+```
+
+
+```{r}
+ggplot(expends, aes(x=year, y=expenditure, fill=category)) + 
+    geom_area() +
+  ggtitle("R Studio: Stack Area Chart")
+
+```
+
+```{r}
+# filter data to us one category
+
+expend_lite <-filter(expends, category == "Food")
+expend_lite
+
+```
+
+#Area Chart
+```{r}
+ggplot(expend_lite, aes(x=year, y=expenditure, fill=category)) + 
+    geom_area(alpha=0.4 , size=1, colour="black") +
+  ggtitle("R Studio: Area Chart")
+```
+```{r}
+expend_lite2 <-expends [which(expends$category %in% c("Food","Housing")),]
+expend_lite2
+```
+```{r}
+ggplot(expend_lite2, aes(x=year, y=expenditure, fill=category)) + 
+    geom_area(alpha=0.4 , size=1, colour="black") +
+  ggtitle("R Studio: Area Chart")
+```
+
+
