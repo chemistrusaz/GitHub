@@ -1,0 +1,123 @@
+---
+title: "Execrise_5-2_Week_9-10"
+author: "Tushar Muley"
+date: "11/07/2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# load libraries
+```{r}
+library(ggplot2)
+library(stringr)
+library(dplyr)
+library(readr)
+library(tidyr)
+library(readxl)
+library(maps)
+```
+
+
+# load data
+```{r}
+
+costcos <- 
+  read.csv("C:/Users/Tushar/Documents/Bellevue_University/DSC_640_Class/Week_9_10/costcos-geocoded.csv", sep=",")
+
+
+```
+# spatial Chart
+
+```{r}
+map(database="state", col="#cccccc")
+symbols(costcos$Longitude, costcos$Latitude, bg="#e2373f", fg="#ffffff",
+  lwd=0.5, circles=rep(1, length(costcos$Longitude)),
+  inches=0.05, add=TRUE)+
+title(main="R Spatial Chart of Costco Locations")
+```
+
+# heat Map
+# load data
+
+
+```{r}
+ppg <- 
+  read_excel("C:/Users/Tushar/Documents/Bellevue_University/DSC_640_Class/Week_9_10/ppg2008.xlsx")
+```
+```{r}
+sapply(ppg, class)
+```
+
+# cars mt data
+
+```{r}
+data <- as.matrix(mtcars)
+```
+# bring new color
+```{r}
+library(RColorBrewer)
+
+coul <- colorRampPalette(brewer.pal(8, "PiYG"))(25)
+```
+
+
+
+# heat map
+```{r}
+heatmap(data, Colv = NA, Rowv = NA, scale="column", col = coul, xlab="variable",
+        ylab="car", main= "R Heat Map with MT Cars")
+```
+
+#Contour chart
+
+
+# prepare data
+```{r}
+data.loess <- loess(qsec ~ wt * hp, data = mtcars)
+```
+# create a sequence of incrementally increasing (by 0.3 units) values for both wt and hp
+
+```{r}
+xgrid <-  seq(min(mtcars$wt), max(mtcars$wt), 0.3)
+ygrid <-  seq(min(mtcars$hp), max(mtcars$hp), 0.3)
+```
+
+# create a df
+```{r}
+data.fit <-  expand.grid(wt = xgrid, hp = ygrid)
+```
+# feed the data into loess model
+```{r}
+mtrx3d <-  predict(data.loess, newdata = data.fit)
+mtrx3d[1:4, 1:4]
+```
+# Transform data to long form
+```{r}
+#Use the melt function to transform data in long form
+library(reshape2)
+mtrx.melt <- melt(mtrx3d, id.vars = c("wt", "hp"), measure.vars = "qsec")
+names(mtrx.melt) <- c("wt", "hp", "qsec")
+```
+# numeric form the data
+```{r}
+mtrx.melt$wt <- as.numeric(str_sub(mtrx.melt$wt, str_locate(mtrx.melt$wt, "=")[1,1] +1))
+mtrx.melt$hp <- as.numeric(str_sub(mtrx.melt$hp, str_locate(mtrx.melt$hp, "=")[1,1] + 1))
+
+head(mtrx.melt)
+```
+# contour map
+```{r}
+ggplot(mtrx.melt, aes(x = wt, y = hp, z = qsec)) +
+  stat_contour(geom = "polygon", aes(fill = ..level..)) +
+  geom_tile(aes(fill = qsec)) +
+  stat_contour(bins = 15) +
+  ggtitle("R Contour map of MT Cars") + 
+  xlab("Weight (1,000lbs)") +
+  ylab("Horsepower") +
+  guides(fill = guide_colorbar(title = "¼ Mi. Time (s)"))
+
+```
+
