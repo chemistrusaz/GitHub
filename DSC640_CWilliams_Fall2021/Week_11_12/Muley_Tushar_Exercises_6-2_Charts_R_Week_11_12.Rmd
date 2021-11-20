@@ -1,0 +1,127 @@
+---
+title: "Exercise_6-2_Week_11-12"
+author: "Tushar Muley"
+date: "11/20/2021"
+output:
+  pdf_document: default
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Load Libraries
+```{r}
+library(ggplot2)
+library(stringr)
+library(dplyr)
+library(readr)
+library(tidyr)
+library(readxl)
+```
+Load data
+```{r}
+crimerate <- read_excel('C:/Users/Tushar/Documents/Bellevue_University/DSC_640_Class/Week_11_12/crimeratesbystate-formatted.xlsx')
+```
+```{r}
+crimerate
+```
+
+
+
+Histogram plot
+```{r}
+hist(crimerate$larceny_theft,
+main="R - Histogram of Larceny Theft",
+xlab="Larceny Theft",
+breaks = 12,
+col="darkmagenta",
+freq=FALSE
+)
+
+```
+
+load more data
+```{r}
+mpg<- read_excel('C:/Users/Tushar/Documents/Bellevue_University/DSC_640_Class/Week_11_12/Auto_MPG.xlsx')
+
+mpg
+```
+
+Boxplots
+
+```{r}
+boxplot(crimerate$murder, 
+        crimerate$robbery,
+        crimerate$burglary,
+        main="R Boxplot of differet Crimes",
+        xlab="Crimes",
+        ylab="Different Crimes",
+        col="orange",
+        border="brown"
+)
+
+```
+
+bullet plot
+```{r}
+#library
+library(plotly)
+
+fig <- plot_ly(
+  type = "indicator",
+  mode = "number+gauge+delta",
+  value = 54,
+  domain = list(x = c(0, 1), y= c(0, 1)),
+  title = list(
+    text = "<b>Toyota</b><br><span style='color: gray; font-size:1.0em'>MPG</span>",
+    font = list(size = 14)),
+  delta = list(reference = 20),
+  gauge = list(
+    shape = "bullet",
+    axis = list(range = list(NULL, 60)),
+    threshold = list(
+      line = list(color = "red", width = 2),
+      thickness = 0.75,
+      value = 52),
+    steps = list(
+      list(range = c(0, 60), color = "lightgray"),
+      list(range = c(15, 42), color = "gray"))),
+  height = 150, width = 600) 
+fig <- fig %>%
+  layout(margin = list(l= 100, r= 10))
+
+fig <- fig %>% layout(title = "R Bullet Chart Toyota MPG")
+
+fig
+```
+```{r}
+#library(ggridges)
+#library(ggplot2)
+#library(viridis)
+#library(hrbrthemes)
+
+# Plot
+#ggplot(lincoln_weather, aes(x = 'Mean Temperature [F]', y = 'Month', fill = ..x..)) +
+#  geom_density_ridges_gradient(scale = 3, rel_min_height = 0.01) +
+#  scale_fill_viridis(name = "Temp. [F]", option = "C") +
+#  labs(title = 'Temperatures in Lincoln NE in 2016') +
+#  theme_ipsum() +
+#    theme(
+#      legend.position="none",
+#      panel.spacing = unit(0.1, "lines"),
+#      strip.text.x = element_text(size = 8)
+#    )
+```
+
+```{r}
+# Diamonds dataset is provided by R natively
+
+ggplot(diamonds, aes(x = price, y = cut, fill = cut)) +
+  geom_density_ridges() +
+  theme_ridges() + 
+  theme(legend.position = "none") +
+  labs(title = 'R Ridgeline Chart: Diamond cuts and price')
+```
+
